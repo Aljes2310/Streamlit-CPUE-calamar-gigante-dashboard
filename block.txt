@@ -1,0 +1,53 @@
+with col2:
+    m=leafmap.Map(center=[-15, -72], zoom=5, minimap_control=True)
+    m.add_circle_markers_from_xy(
+    df, x="LONGITUD", y="LATITUD", radius=7, color="blue", 
+    popup=["LONGITUD", "LATITUD", "captura_kg", "date"]
+)   
+    m.to_streamlit(height=700)
+
+#heatmap
+
+with col1:
+    m1=leafmap.Map(center=[-15, -72], zoom=5, minimap_control=True,
+    fullscreen_control=False,
+    attribution_control=True)
+    m1.add_tile_layer(
+    url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+    name="Google Satellite",
+    attribution="Google",
+)
+    m1.add_heatmap(
+    df,
+    latitude="LATITUD",
+    longitude='LONGITUD',
+    value="Temp_55m",
+    name="Heat map",
+    radius=18,
+)   
+    MousePosition().add_to(m1)
+    m1.add_child(folium.LatLngPopup())
+    m1.add_colorbar(
+    colors=["blue", "cyan", "lime", "yellow", "red"],
+    vmin=min(df["Temp_55m"]) , vmax=max(df["Temp_55m"]),
+              height="70px", transparent_bg=False                          
+    #orientation='vertical'
+)   
+
+    m1.add_title("Temperatura (°C)", font_size="20px", align="center")
+    m1.to_streamlit(height=700)
+
+
+
+
+#scatter:
+
+with col1:
+    fig = px.scatter(
+    df_selection,
+    x="Temp_55m",
+    y="CPUE",
+    color="Sal_55m",
+    color_continuous_scale="reds",
+)
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
